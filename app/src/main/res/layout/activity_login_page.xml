@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D8E3E8"
+    tools:context=".LoginPage">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="12dp"
+        android:background="#D8E3E8"
+        android:layout_marginHorizontal="22dp">
+    <ImageView
+        android:layout_width="138dp"
+        android:layout_height="138dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginVertical="32dp"
+        android:id="@+id/img"
+        android:src="@drawable/baseline_login_24"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/img"
+        android:id="@+id/hello"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black"
+            android:text="Hello, There!!"
+            android:fontFamily="sans-serif-black"
+            android:textStyle="bold"
+            android:textSize="38dp">
+
+        </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hello"
+        android:id="@+id/login"
+        android:orientation="vertical"
+        >
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Email"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            android:layout_marginTop="12dp"
+            android:padding="16dp"
+            android:id="@+id/email"
+            android:inputType="text"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Password"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:layout_marginTop="12dp"
+            android:padding="16dp"
+            android:id="@+id/password"
+            android:inputType="textPassword"/>
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:id="@+id/button1"
+            android:textSize="17dp"
+            android:layout_marginTop="12dp"
+            android:text="Create Account"
+            android:padding="16dp"
+            />
+        <ProgressBar
+            android:layout_width="24dp"
+            android:layout_height="64dp"
+            android:id="@+id/progressbar"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginTop="12dp"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/login3"
+        android:layout_marginVertical="32dp"
+        android:layout_below="@+id/login"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Already have an account?  "
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#FF0000"
+            android:text="Login"
+            android:id="@+id/buttonlogin"
+            />
+
+
+    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/login3"
+            android:layout_marginVertical="43dp"
+            >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="18sp"
+            android:id="@+id/blink"
+            android:textColor="#006400"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="Verify the Email first!!"   />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>
