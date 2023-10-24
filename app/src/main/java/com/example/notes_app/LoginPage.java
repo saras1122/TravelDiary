@@ -31,11 +31,11 @@ public class LoginPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setContentView(R.layout.activity_login_page);
-        email=findViewById(R.id.email);
-        password=findViewById(R.id.password);
         button1=findViewById(R.id.button1);
         blink=findViewById(R.id.blink);
         progressbar=findViewById(R.id.progressbar);
+        email=findViewById(R.id.email);
+        password=findViewById(R.id.password);
         login=findViewById(R.id.buttonlogin);
         Animation animation =new AlphaAnimation(0.0f,1.0f);
         animation.setDuration(2500);

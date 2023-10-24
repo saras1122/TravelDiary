@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_marginVertical="8dp"
-    android:backgroundTint="#f5f5f5"
+    android:backgroundTint="#FFD700"
     android:background="@drawable/rounded"
     android:id="@+id/recycle"
     android:layout_height="wrap_content">
@@ -17,6 +17,11 @@
         android:id="@+id/titletext"
         android:textSize="18sp"
         android:layout_marginVertical="4dp"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/image"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +39,24 @@
         android:text="date"
         android:gravity="right"
         android:textSize="12sp"
+        android:visibility="gone"
         android:layout_marginVertical="4sp"
         android:id="@+id/timeStamp"/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:id="@+id/share"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/baseline_share_24"
+        android:layout_gravity="right"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:id="@+id/bookmark"
+        android:layout_marginTop="-35dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/bookmarkwhite"
+        android:layout_gravity="left"/>
 
 </LinearLayout>

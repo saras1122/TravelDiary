@@ -4,13 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D8E3E8"
+    android:background="#FEE7E7"
     tools:context=".LoginPage">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginVertical="12dp"
-        android:background="#D8E3E8"
         android:layout_marginHorizontal="22dp">
     <ImageView
         android:layout_width="138dp"
@@ -49,26 +48,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter Email"
-            android:textSize="20dp"
             android:textColor="@color/black"
+            android:textSize="20dp"
             android:layout_marginTop="12dp"
             android:padding="16dp"
+            android:backgroundTint="@color/white"
+            android:drawableLeft="@drawable/mail"
+            android:drawablePadding="15dp"
+            android:background="@drawable/rounded"
             android:id="@+id/email"
             android:inputType="text"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter Password"
-            android:textColor="@color/black"
             android:textSize="20dp"
+            android:textColor="@color/black"
             android:layout_marginTop="12dp"
             android:padding="16dp"
+            android:backgroundTint="@color/white"
+            android:drawableLeft="@drawable/lock"
+            android:drawablePadding="15dp"
+            android:background="@drawable/rounded"
             android:id="@+id/password"
             android:inputType="textPassword"/>
         <com.google.android.material.button.MaterialButton
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:id="@+id/button1"
+            android:backgroundTint="#FA4A0C"
             android:textSize="17dp"
             android:layout_marginTop="12dp"
             android:text="Create Account"
