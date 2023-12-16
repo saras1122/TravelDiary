@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +39,7 @@ public class SplashActivity extends AppCompatActivity {
                 if(currentUser==null){
                     startActivity(new Intent(SplashActivity.this, Login1.class));
                 }else{
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    startActivity(new Intent(SplashActivity.this, FirstActivity.class));
                 }
 //                Intent intent =new Intent(SplashActivity.this,MainActivity.class);
 //                startActivity(intent);
@@ -47,4 +48,5 @@ public class SplashActivity extends AppCompatActivity {
             }
         },  3500);
     }
+
 }

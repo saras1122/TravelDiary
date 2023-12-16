@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="HighlightedDateTextAppearance">
+        <item name="android:textColor">@color/highlighted_date_text_color</item>
+        <!-- Add other styling attributes as needed -->
+    </style>
+    <style name="CalendarDateText">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">16sp</item>
+        <!-- Add more attributes as needed -->
+    </style>
+
+    <style name="CalendarWeekDayText">
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:textSize">14sp</item>
+        <!-- Add more attributes as needed -->
+    </style>
+</resources>

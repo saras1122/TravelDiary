@@ -55,7 +55,7 @@ public class Login1 extends AppCompatActivity {
                 change(false);
                 if(task.isSuccessful()){
                     if(firebaseAuth.getCurrentUser().isEmailVerified()){
-                        startActivity(new Intent(Login1.this,MainActivity.class));
+                        startActivity(new Intent(Login1.this,FirstActivity.class));
                     }
                     else{
                         Toast.makeText(Login1.this, "not verified", Toast.LENGTH_SHORT).show();

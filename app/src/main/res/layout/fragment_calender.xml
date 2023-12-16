@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FEE7E7"
+    tools:context=".CalenderFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <CalendarView
+        android:id="@+id/calender"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:firstDayOfWeek="2"
+        android:focusedMonthDateColor="#FF0000"
+        android:maxDate="01/01/2033"
+        android:minDate="01/01/1980"
+        android:dateTextAppearance="@style/CalendarDateText"
+        android:weekDayTextAppearance="@style/CalendarWeekDayText"/>
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="3dp"
+        android:background="@color/black"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:text="Date vs Location"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="15dp"
+        android:textStyle="bold"
+        android:textSize="19sp"
+        android:gravity="left"
+        android:textColor="@color/black"/>
+    <ListView
+        android:id="@+id/list1"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:textAlignment="gravity"
+        android:dividerHeight="1dp"
+        android:padding="8dp"/>
+
+</LinearLayout>

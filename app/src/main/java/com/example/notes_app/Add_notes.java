@@ -1,11 +1,14 @@
 package com.example.notes_app;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -19,7 +22,10 @@ import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -28,6 +34,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.denzcoskun.imageslider.ImageSlider;
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,19 +50,27 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public class Add_notes extends AppCompatActivity {
-    EditText notes2,notes1;
-    ImageButton savebutton,bookmark;
+    EditText notes2,notes1,location;
+    ImageButton savebutton,bookmark,defaulted;
     ImageView IVPreviewImage;
     private RadioGroup radioGroup;
-    TextView pagetitle;
+    TextView pagetitle,date1,blink;
     String title,content,docId;
     boolean isEdit=false;
-    Button italic,bold,underline,defaulted,BSelectImage;
+    ImageButton italic,bold,underline,BSelectImage;
     String s="BLACK";
     ArrayList<Integer> styles = new ArrayList<>();
     ArrayList<Integer> start1 = new ArrayList<Integer>();
@@ -65,11 +83,57 @@ public class Add_notes extends AppCompatActivity {
     FirebaseFirestore firebaseFirestore;
     StorageReference storageReference;
     String photoUrl;
+    ArrayList<Uri> imageBit= new ArrayList<>();
+    ArrayList<Bitmap> bitmaps= new ArrayList<>();
+    int count=0;
+    int mYear,mMonth,mDay;
+    List<SlideModel> imageList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_notes);
+        date1=findViewById(R.id.date1);
+        final Calendar c = Calendar.getInstance();
+        int yy = c.get(Calendar.YEAR);
+        int mm = c.get(Calendar.MONTH);
+        int dd = c.get(Calendar.DAY_OF_MONTH);
+        String myFormat = "dd/MM/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.FRANCE);
+        // set current date into textview
+        date1.setText(sdf.format(c.getTime()));
+//        date1.setText(new StringBuilder()
+//                // Month is 0 based, just add 1
+//                .append(yy).append(" ").append("-").append(mm + 1).append("-")
+//                .append(dd));
+        date1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar mcurrentDate = Calendar.getInstance();
+                mYear = mcurrentDate.get(Calendar.YEAR);
+                mMonth = mcurrentDate.get(Calendar.MONTH);
+                mDay = mcurrentDate.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog mDatePicker = new DatePickerDialog(Add_notes.this, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                        Calendar myCalendar = Calendar.getInstance();
+                        myCalendar.set(Calendar.YEAR, selectedyear);
+                        myCalendar.set(Calendar.MONTH, selectedmonth);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, selectedday);
+                        String myFormat = "dd/MM/yy";
+                        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.FRANCE);
+                        date1.setText(sdf.format(myCalendar.getTime()));
+                        Log.d("date",date1.getText().toString() + "");
+                        mDay = selectedday;
+                        mMonth = selectedmonth;
+                        mYear = selectedyear;
+                    }
+                }, mYear, mMonth, mDay);
+                //mDatePicker.setTitle("Select date");
+                mDatePicker.show();
+            }
+        });
         notes1=findViewById(R.id.notes1);
+        location=findViewById(R.id.location);
         notes2=findViewById(R.id.notes2);
         pagetitle=findViewById(R.id.pagetitle);
         savebutton=findViewById(R.id.savebutton);
@@ -80,7 +144,6 @@ public class Add_notes extends AppCompatActivity {
         radioGroup = (RadioGroup)findViewById(R.id.groupradio);
         bookmark=findViewById(R.id.bookmark);
         BSelectImage = findViewById(R.id.img);
-        IVPreviewImage = findViewById(R.id.IVPreviewImage);
         int radioId=radioGroup.getChildAt(0).getId();
         radioGroup.check(radioId);
         notes2.setTextColor(Color.BLACK);
@@ -111,8 +174,10 @@ public class Add_notes extends AppCompatActivity {
                         HashMap<String, Integer> colorMap = new HashMap<>();
                         colorMap.put("RED", Color.RED);
                         colorMap.put("GREEN", Color.GREEN);
-                        colorMap.put("MAGENTA", Color.MAGENTA);
+                        colorMap.put("DKGRAY", Color.DKGRAY);
                         colorMap.put("BLACK", Color.BLACK);
+
+                        //Log.d("id",checkedId+""+colorMap.get(s));
                         notes2.setTextColor(colorMap.get(s));
                         Toast.makeText(Add_notes.this,
                                 radioButton.getText(), Toast.LENGTH_SHORT).show();
@@ -187,19 +252,27 @@ public class Add_notes extends AppCompatActivity {
     void Save() {
         String title=notes1.getText().toString();
         String content=notes2.getText().toString();
+        String location1=location.getText().toString();
         if(title.isEmpty() || title==null){
             notes1.setError("Please Enter Title Name :)");
             return;
         }
+        if(location1.isEmpty() || location1==null){
+            location.setError("Please Enter Location :)");
+            return;
+        }
         Note note=new Note();
         note.setTitle(title);
+        note.setLocation(location1);
         note.setContent(content);
+        note.setDate(date1.getText().toString());
         note.setArr(styles);
         note.setStart(start1);
         note.setEnd(end);
         note.setColor(s);
         note.setFlag(flag);
-        if (selectedImageBitmap != null) {
+        Log.d("count",count+"");
+        if (count != 0) {
             uploadImageToStorage(selectedImageBitmap, note);
         }else{
             saveNote(note);
@@ -227,6 +300,7 @@ public class Add_notes extends AppCompatActivity {
         // intent of the type image
         Intent i = new Intent();
         i.setType("image/*");
+        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         i.setAction(Intent.ACTION_GET_CONTENT);
         launchSomeActivity.launch(i);
     }
@@ -240,53 +314,80 @@ public class Add_notes extends AppCompatActivity {
                     Intent data = result.getData();
                     // do your operation from here....
                     if (data != null
-                            && data.getData() != null) {
+                            && data.getClipData() != null) {
                         imageURL=data.getData();
-                        Uri selectedImageUri = data.getData();
-                        try {
-                            selectedImageBitmap
-                                    = MediaStore.Images.Media.getBitmap(
-                                    this.getContentResolver(),
-                                    selectedImageUri);
+                        count = data.getClipData().getItemCount();
+                        int CurrentImageSelect = 0;
+                        while (CurrentImageSelect < count) {
+                            Uri imageuri = data.getClipData().getItemAt(CurrentImageSelect).getUri();
+                            imageBit.add(imageuri);
+                            CurrentImageSelect = CurrentImageSelect + 1;
                         }
-                        catch (IOException e) {
-                            e.printStackTrace();
+                        ImageSlider imageSlider = findViewById(R.id.image_slider);
+                        List<SlideModel> imageList1 = new ArrayList<>();
+                        for(Uri i:imageBit){
+                            imageList1.add(new SlideModel(i.toString(),"To see preview first save images then come back"
+                                    , ScaleTypes.CENTER_CROP));
                         }
-                        IVPreviewImage.setImageBitmap(
-                                selectedImageBitmap);
+                        imageSlider.setImageList(imageList1);
+                        imageSlider.startSliding(1000000);
+                        imageSlider.stopSliding();
+                        Log.d("count",count+"");
+                        Log.d("list i see",imageBit+"");
+                    }else{
+                        count = 1;
+                        Uri imageuri = data.getData();
+                        imageBit.add(imageuri);
+                        ImageSlider imageSlider = findViewById(R.id.image_slider);
+                        List<SlideModel> imageList1 = new ArrayList<>();
+                        imageList1.add(new SlideModel(imageuri.toString(),"To see preview first save images then come back"
+                                , ScaleTypes.CENTER_CROP));
+                        imageSlider.setImageList(imageList1);
+                        imageSlider.startSliding(1000000);
+                        imageSlider.stopSliding();
                     }
                 }
             });
     private void uploadImageToStorage(Bitmap imageBitmap, Note note) {
-        if(imageURL!=null){
-            final StorageReference myref=storageReference.child("photo/" + imageURL.getLastPathSegment());
-            myref.putFile(imageURL).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    myref.getDownloadUrl()
-                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    if(uri!=null){
-                                        photoUrl=uri.toString();
-                                        note.setImageUrl(photoUrl);
-                                        Log.d("hello",note.getImageUrl()+"img");
-                                        saveNote(note);
+        ArrayList<String> a=new ArrayList<>();
+        if(count!=0){
+            for(int i=0;i<imageBit.size();i++) {
+                Uri individualImage = imageBit.get(i);
+
+                Log.d("list", imageBit + "");
+                final StorageReference myref = storageReference.child("photo/" + individualImage.getLastPathSegment());
+                myref.putFile(individualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        myref.getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        if (uri != null) {
+                                            photoUrl = uri.toString();
+                                            a.add(photoUrl);
+                                            if(a.size()==count){
+                                                note.setImages(a);
+                                                saveNote(note);
+                                            }
+                                            note.setImageUrl(photoUrl);
+                                            Log.d("hello", note.getImageUrl() + "img");
+                                        }
                                     }
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
 
-                                }
-                            });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
+                                    }
+                                });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
 
-                }
-            });
+                    }
+                });
+            }
         }
     }
 }

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name = "android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +20,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Notes_app"
         tools:targetApi="31">
+        <activity
+            android:name=".Message"
+            android:exported="false" />
+        <activity
+            android:name=".FirstActivity"
+            android:exported="false" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBGfopFQ5Kfwe6B9qGS0yBwS0G61bby9e8" />
+
+        <activity
+            android:name=".MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps" />
+        <activity
+            android:name=".Calender"
+            android:exported="false" />
         <activity
             android:name=".MainActivity2"
             android:exported="false" />
@@ -36,6 +61,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name = ".NotificationServices"
+            android:label = "@string/app_name"
+            android:exported="true">
+            <intent-filter>
+                <action
+                    android:name ="app.com.examples.notes_app.NotificationServices" />
+                <category android:name= "android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+        <receiver android:name= ".MyNotificationPublisher" />
     </application>
 
 </manifest>

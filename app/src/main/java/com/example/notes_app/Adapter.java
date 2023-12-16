@@ -34,7 +34,8 @@ public class Adapter extends FirestoreRecyclerAdapter<Note,Adapter.NoteView> {
     @Override
     protected void onBindViewHolder(@NonNull NoteView holder, int position, @NonNull Note note) {
         holder.title.setText(note.title);
-        holder.content.setText(note.content);
+        holder.content.setText(note.location);
+        holder.timestamp.setText(note.date);
         if(note.getFlag()){
             holder.bookmark.setImageResource(R.drawable.bookmark);
         }else{
@@ -64,6 +65,10 @@ public class Adapter extends FirestoreRecyclerAdapter<Note,Adapter.NoteView> {
             intent.putExtra("color",note.color);
             intent.putExtra("flag",note.flag);
             intent.putExtra("image",note.imageUrl);
+            intent.putExtra("listImages",note.images);
+            intent.putExtra("date",note.date);
+            intent.putExtra("location",note.location);
+            intent.putExtra("lLocation",note.lLocation);
             String docId=this.getSnapshots().getSnapshot(position).getId();
             intent.putExtra("docId",docId);
             context.startActivity(intent);
@@ -78,13 +83,14 @@ public class Adapter extends FirestoreRecyclerAdapter<Note,Adapter.NoteView> {
     }
 
     class NoteView extends RecyclerView.ViewHolder {
-        TextView title,content;
+        TextView title,content,timestamp;
         ImageButton share,bookmark;
         LinearLayout linearLayout;
         public NoteView(@NonNull View itemView){
             super(itemView);
             title=itemView.findViewById(R.id.titletext);
             content=itemView.findViewById(R.id.contenttext);
+            timestamp=itemView.findViewById(R.id.timeStamp);
             share=itemView.findViewById(R.id.share);
             bookmark=itemView.findViewById(R.id.bookmark);
             linearLayout=itemView.findViewById(R.id.recycle);

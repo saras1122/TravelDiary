@@ -4,19 +4,34 @@
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_marginVertical="8dp"
-    android:backgroundTint="#FFD700"
+    android:backgroundTint="#FFB6C1"
     android:background="@drawable/rounded"
     android:id="@+id/recycle"
     android:layout_height="wrap_content">
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="add note"
-        android:textColor="@color/black"
-        android:id="@+id/titletext"
-        android:textSize="18sp"
-        android:layout_marginVertical="4dp"/>
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add note"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:id="@+id/titletext"
+            android:textSize="15sp"
+            android:layout_marginVertical="4dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@color/black"
+            android:text="date"
+            android:textStyle="bold"
+            android:gravity="right"
+            android:textSize="15sp"
+            android:layout_marginVertical="4sp"
+            android:id="@+id/timeStamp"/>
+    </LinearLayout>
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,22 +41,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="content"
-        android:maxLines="4"
-        android:gravity="right"
+        android:drawableLeft="@drawable/baseline_add_location_24"
+        android:gravity="left"
         android:id="@+id/contenttext"
         android:ellipsize="end"
-        android:textColor="@color/black"
-        android:textSize="12sp"
+        android:textColor="#E75480"
+        android:textStyle="bold"
+        android:textSize="15sp"
         android:layout_marginVertical="4dp"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="date"
-        android:gravity="right"
-        android:textSize="12sp"
-        android:visibility="gone"
-        android:layout_marginVertical="4sp"
-        android:id="@+id/timeStamp"/>
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="35dp"

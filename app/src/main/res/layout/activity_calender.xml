@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="#FEE7E7"
+    tools:context=".Calender">
+
+    <!-- Add TextView to display the date -->
+
+    <!-- Add CalendarView to display the Calendar -->
+    <CalendarView
+        android:id="@+id/calender"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:firstDayOfWeek="2"
+        android:maxDate="01/01/2033"
+        android:minDate="01/01/1980" />
+    <ListView
+        android:id="@+id/list"
+        android:layout_marginTop="85dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:textAlignment="gravity"
+        android:dividerHeight="1dp"
+        android:padding="8dp"/>
+</LinearLayout>

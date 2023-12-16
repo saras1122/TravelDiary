@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class Note {
+    String date,location;
 
     String title;
     String content;
@@ -15,6 +16,8 @@ public class Note {
     String color;
     Boolean flag=false;
     String imageUrl;
+    ArrayList<String> images;
+    ArrayList<String> lLocation;
     public Note(){
 
     }
@@ -83,5 +86,32 @@ public class Note {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+    public ArrayList<String> getImages() {
+        return images;
+    }
+
+    public void setImages(ArrayList<String> images) {
+        this.images = images;
+    }
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    public void setlLocation(ArrayList<String> arr) {
+        this.lLocation = lLocation;
+    }
+    public ArrayList<String> getlLocation() {
+        return lLocation;
     }
 }

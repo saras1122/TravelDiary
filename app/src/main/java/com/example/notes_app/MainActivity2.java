@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +25,7 @@ import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -34,6 +36,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.denzcoskun.imageslider.ImageSlider;
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,17 +54,23 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity2 extends AppCompatActivity {
-    EditText notes2,notes1;
-    ImageButton savebutton,bookmark,delete1;
+    int count=0;
+    ArrayList<Uri> imageBit= new ArrayList<>();
+    EditText notes2,notes1,location;
+    ImageButton savebutton,bookmark,delete1,del;
     TextView pagetitle;
     ImageView IVPreviewImage;
-    TextView delete;
-    String title,content,docId;
-    Button italic,bold,underline,defaulted,BSelectImage;
+    TextView delete,date1;
+    String title,content,docId,dateJ,loc;
+    ImageButton italic,bold,underline,defaulted,BSelectImage;
     private RadioGroup radioGroup;
     boolean isEdit=false;
     ArrayList<Integer> styles = new ArrayList<>();
@@ -78,10 +89,14 @@ public class MainActivity2 extends AppCompatActivity {
 
     private Bitmap bitmap;
     boolean isImageFitToScreen;
+    int mYear,mMonth,mDay;
+    List<SlideModel> imageList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        date1=findViewById(R.id.date1);
+        location=findViewById(R.id.location);
         notes1=findViewById(R.id.notes1);
         notes2=findViewById(R.id.notes2);
         pagetitle=findViewById(R.id.pagetitle);
@@ -93,19 +108,25 @@ public class MainActivity2 extends AppCompatActivity {
         defaulted=findViewById(R.id.defaulted);
         bookmark=findViewById(R.id.bookmark);
         radioGroup = (RadioGroup)findViewById(R.id.groupradio);
-        IVPreviewImage = findViewById(R.id.IVPreviewImage);
+//        IVPreviewImage = findViewById(R.id.IVPreviewImage);
         BSelectImage=findViewById(R.id.img);
         delete1=findViewById(R.id.delete1);
         colorMap.put("RED", Color.RED);
         colorMap.put("GREEN", Color.GREEN);
-        colorMap.put("MAGENTA", Color.MAGENTA);
+        colorMap.put("DKGRAY", Color.DKGRAY);
         colorMap.put("BLACK", Color.BLACK);
+        del=findViewById(R.id.del);
+
+
+
 //        int radioId=radioGroup.getChildAt(0).getId();
 //        radioGroup.check(radioId);
         title=getIntent().getStringExtra("title");
+        loc=getIntent().getStringExtra("location");
         content=getIntent().getStringExtra("content");
         docId=getIntent().getStringExtra("docId");
         textColor=getIntent().getStringExtra("color");
+        dateJ=getIntent().getStringExtra("date");
         colors(textColor);
         //
         firebaseFirestore= FirebaseFirestore.getInstance();
@@ -119,6 +140,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         notes1.setText(title);
         notes2.setText(content);
+        location.setText(loc);
         notes2.setTextColor(colorMap.get(textColor));
         //formatText(notes2);
         if(isEdit){
@@ -126,6 +148,18 @@ public class MainActivity2 extends AppCompatActivity {
             ArrayList<Integer> stylesz=getIntent().getIntegerArrayListExtra("styles");
             ArrayList<Integer> s1=getIntent().getIntegerArrayListExtra("start");
             ArrayList<Integer> e1=getIntent().getIntegerArrayListExtra("end");
+            ArrayList<String> urls=getIntent().getStringArrayListExtra("listImages");
+            Log.d("myg", urls+"This is my message");
+            if(urls!=null && urls.size()!=0 ) {
+                Log.d("myffg", stylesz.size()+"This is my message");
+                ImageSlider imageSlider = findViewById(R.id.image_slider);
+                for (String s : urls) {
+                    imageList.add(new SlideModel(s, ScaleTypes.CENTER_CROP));
+                }
+                imageSlider.setImageList(imageList);
+                imageSlider.startSliding(1000000);
+                imageSlider.stopSliding();
+            }
             Log.d("myTag", stylesz.size()+"This is my message");
             if(stylesz.get(0)==1){
                 Spannable spannable=new SpannableStringBuilder(notes2.getText());
@@ -171,7 +205,7 @@ public class MainActivity2 extends AppCompatActivity {
                 delete1.setVisibility(View.VISIBLE);
             }
             pagetitle.setText("Edit your note");
-            delete.setVisibility(View.VISIBLE);
+            date1.setText(dateJ);
         }
         ArrayList<Integer> i1=getIntent().getIntegerArrayListExtra("styles");
         ArrayList<Integer> s1=getIntent().getIntegerArrayListExtra("start");
@@ -181,15 +215,42 @@ public class MainActivity2 extends AppCompatActivity {
             start.add(s1.get(i-1));
             end.add(e1.get(i-1));
         }
-        IVPreviewImage.setOnClickListener((v)->{
-            if(isImageFitToScreen) {
-                isImageFitToScreen=false;
-                IVPreviewImage.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                IVPreviewImage.setAdjustViewBounds(true);
-            }else{
-                isImageFitToScreen=true;
-                IVPreviewImage.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-                IVPreviewImage.setScaleType(ImageView.ScaleType.FIT_XY);
+//        IVPreviewImage.setOnClickListener((v)->{
+//            if(isImageFitToScreen) {
+//                isImageFitToScreen=false;
+//                IVPreviewImage.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+//                IVPreviewImage.setAdjustViewBounds(true);
+//            }else{
+//                isImageFitToScreen=true;
+//                IVPreviewImage.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+//                IVPreviewImage.setScaleType(ImageView.ScaleType.FIT_XY);
+//            }
+//        });
+        date1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar mcurrentDate = Calendar.getInstance();
+                mYear = mcurrentDate.get(Calendar.YEAR);
+                mMonth = mcurrentDate.get(Calendar.MONTH);
+                mDay = mcurrentDate.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog mDatePicker = new DatePickerDialog(MainActivity2.this, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                        Calendar myCalendar = Calendar.getInstance();
+                        myCalendar.set(Calendar.YEAR, selectedyear);
+                        myCalendar.set(Calendar.MONTH, selectedmonth);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, selectedday);
+                        String myFormat = "dd/MM/yy";
+                        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.FRANCE);
+                        date1.setText(sdf.format(myCalendar.getTime()));
+                        Log.d("date",date1.getText().toString() + "");
+                        mDay = selectedday;
+                        mMonth = selectedmonth;
+                        mYear = selectedyear;
+                    }
+                }, mYear, mMonth, mDay);
+                //mDatePicker.setTitle("Select date");
+                mDatePicker.show();
             }
         });
         BSelectImage.setOnClickListener(new View.OnClickListener() {
@@ -282,7 +343,7 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
         savebutton.setOnClickListener((v) -> Save());
-        delete.setOnClickListener((v)-> deleteNotefromFirebase());
+        del.setOnClickListener((v)-> deleteNotefromFirebase());
     }
     protected Bitmap doInBackground(URL url) {
         Thread thread =new Thread(new Runnable() {
@@ -301,7 +362,7 @@ public class MainActivity2 extends AppCompatActivity {
     }
     protected void onPostExecute(Bitmap result) {
         Log.d("Error Message", result+"magw");
-        IVPreviewImage.setImageBitmap(result);
+//        IVPreviewImage.setImageBitmap(result);
     }
 
     public void colors(String s){
@@ -325,19 +386,26 @@ public class MainActivity2 extends AppCompatActivity {
     private void Save() {
         String title=notes1.getText().toString();
         String content=notes2.getText().toString();
+        String location1=location.getText().toString();
         if(title.isEmpty() || title==null){
             notes1.setError("Please Enter Title Name :)");
             return;
         }
+        if(location1.isEmpty() || location1==null){
+            location.setError("Please Enter Location :)");
+            return;
+        }
         Note note=new Note();
         note.setTitle(title);
+        note.setLocation(location1);
         note.setContent(content);
         note.setArr(styles);
         note.setStart(start);
         note.setEnd(end);
         note.setColor(textColor);
         note.setFlag(flag);
-        if (selectedImageBitmap != null) {
+        note.setDate(date1.getText().toString());
+        if (count != 0) {
             uploadImageToStorage(selectedImageBitmap, note);
         }else{
             saveNote(note);
@@ -383,6 +451,7 @@ public class MainActivity2 extends AppCompatActivity {
     void imageChooser() {
         Intent i = new Intent();
         i.setType("image/*");
+        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         i.setAction(Intent.ACTION_GET_CONTENT);
         launchSomeActivity.launch(i);
     }
@@ -394,55 +463,82 @@ public class MainActivity2 extends AppCompatActivity {
                 if (result.getResultCode() == Activity.RESULT_OK) {
 
                     Intent data = result.getData();
+                    // do your operation from here....
                     if (data != null
-                            && data.getData() != null) {
+                            && data.getClipData() != null) {
                         imageURL=data.getData();
-                        Uri selectedImageUri = data.getData();
-                        try {
-                            selectedImageBitmap
-                                    = MediaStore.Images.Media.getBitmap(
-                                    this.getContentResolver(),
-                                    selectedImageUri);
+                        count = data.getClipData().getItemCount();
+                        int CurrentImageSelect = 0;
+                        while (CurrentImageSelect < count) {
+                            Uri imageuri = data.getClipData().getItemAt(CurrentImageSelect).getUri();
+                            imageBit.add(imageuri);
+                            CurrentImageSelect = CurrentImageSelect + 1;
                         }
-                        catch (IOException e) {
-                            e.printStackTrace();
+                        ImageSlider imageSlider = findViewById(R.id.image_slider);
+                        List<SlideModel> imageList1 = new ArrayList<>();
+                        for(Uri i:imageBit){
+                            imageList1.add(new SlideModel(i.toString(),"To see preview first save images then come back"
+                                    , ScaleTypes.CENTER_CROP));
                         }
-                        IVPreviewImage.setImageBitmap(
-                                selectedImageBitmap);
+                        imageSlider.setImageList(imageList1);
+                        imageSlider.startSliding(1000000);
+                        imageSlider.stopSliding();
+                        Log.d("count",count+"");
+                        Log.d("list i see",imageBit+"");
+                    }else{
+                        count = 1;
+                        Uri imageuri = data.getData();
+                        imageBit.add(imageuri);
+                        ImageSlider imageSlider = findViewById(R.id.image_slider);
+                        List<SlideModel> imageList1 = new ArrayList<>();
+                            imageList1.add(new SlideModel(imageuri.toString(),"To see preview first save images then come back"
+                                    , ScaleTypes.CENTER_CROP));
+                        imageSlider.setImageList(imageList1);
+                        imageSlider.startSliding(1000000);
+                        imageSlider.stopSliding();
                     }
                 }
             });
     private void uploadImageToStorage(Bitmap imageBitmap, Note note) {
-        if(imageURL!=null){
-            final StorageReference myref=storageReference.child("photo/" + imageURL.getLastPathSegment());
-            myref.putFile(imageURL).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    myref.getDownloadUrl()
-                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    if(uri!=null){
-                                        photoUrl=uri.toString();
-                                        note.setImageUrl(photoUrl);
-                                        Log.d("hello",note.getImageUrl()+"img");
-                                        saveNote(note);
+        ArrayList<String> a=new ArrayList<>();
+        if(count!=0){
+            for(int i=0;i<imageBit.size();i++) {
+                Uri individualImage = imageBit.get(i);
+
+                Log.d("list finallly", imageBit + "");
+                final StorageReference myref = storageReference.child("photo/" + individualImage.getLastPathSegment());
+                myref.putFile(individualImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        myref.getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        if (uri != null) {
+                                            photoUrl = uri.toString();
+                                            a.add(photoUrl);
+                                            if(a.size()==count){
+                                                note.setImages(a);
+                                                saveNote(note);
+                                            }
+                                            note.setImageUrl(photoUrl);
+                                            Log.d("hello", note.getImageUrl() + "img");
+                                        }
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
 
                                     }
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
+                                });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
 
-                                }
-                            });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-
-                }
-            });
+                    }
+                });
+            }
         }
     }
 }
